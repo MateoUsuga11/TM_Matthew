@@ -15,7 +15,7 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 st.title("Reconocimiento de Imágenes - Piedra, Papel o Tijera")
 
 # Imagen de ejemplo en la app
-image = Image.open('OIG5.jpg')
+image = Image.open('BannerImg.png')
 st.image(image, width=350)
 
 with st.sidebar:
@@ -53,6 +53,17 @@ if img_file_buffer is not None:
     if jugador in ["Tijera", "Piedra", "Papel"]:
         computadora = random.choice(["Tijera", "Piedra", "Papel"])
         st.subheader(f"La computadora eligió: {computadora}")
+
+        # Mostrar imagen del robot según la elección de la computadora
+        robot_images = {
+            "Piedra": "RobotRock.png",
+            "Papel": "RobotPaper.png",
+            "Tijera": "RobotScissors.png"
+        }
+
+        if computadora in robot_images:
+            robot_img = Image.open(robot_images[computadora])
+            st.image(robot_img, caption=f"El robot eligió {computadora}", width=250)
 
         # Determinar el resultado
         if jugador == computadora:

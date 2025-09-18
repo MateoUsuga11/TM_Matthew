@@ -1,4 +1,4 @@
-0 Tijera
-1 Piedra
+0 tijera
+1 piedra
 2 Papel
-3 Nadota
+3 Nada

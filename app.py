@@ -46,7 +46,7 @@ if img_file_buffer is not None:
       st.header('Piedra, con Probabilidad: '+str( prediction[0][1]))
     if prediction[0][2]>0.5:
      st.header('Papel, con Probabilidad: '+str( prediction[0][2]))
-    if prediction[0][4]>0.5:
+    if prediction[0][3]>0.5:
      st.header('Nadota, con Probabilidad: '+str( prediction[0][3]))
 
 

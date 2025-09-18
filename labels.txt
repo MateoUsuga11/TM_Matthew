@@ -1,3 +1,4 @@
-0 Izquierda
-1 Arriba
-2 Derecha
+0 Tijera
+1 Piedra
+2 Papel
+3 Nadota

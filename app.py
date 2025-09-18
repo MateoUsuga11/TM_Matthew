@@ -1,11 +1,10 @@
 import streamlit as st
 import cv2
 import numpy as np
-#from PIL import Image
-from PIL import Image as Image, ImageOps as ImagOps
+from PIL import Image as Image
 from keras.models import load_model
-
 import platform
+import random
 
 # Muestra la versión de Python junto con detalles adicionales
 st.write("Versión de Python:", platform.python_version())
@@ -13,40 +12,60 @@ st.write("Versión de Python:", platform.python_version())
 model = load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-st.title("Reconocimiento de Imágenes")
-#st.write("Versión de Python:", platform.python_version())
+st.title("Reconocimiento de Imágenes - Piedra, Papel o Tijera")
+
+# Imagen de ejemplo en la app
 image = Image.open('OIG5.jpg')
 st.image(image, width=350)
+
 with st.sidebar:
-    st.subheader("Usando un modelo entrenado en teachable Machine puedes Usarlo en esta app para identificar")
+    st.subheader("Usando un modelo entrenado en Teachable Machine para jugar Piedra, Papel o Tijera")
+
 img_file_buffer = st.camera_input("Toma una Foto")
 
 if img_file_buffer is not None:
-    # To read image file buffer with OpenCV:
+    # Preprocesamiento de la imagen
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-   #To read image file buffer as a PIL Image:
     img = Image.open(img_file_buffer)
 
     newsize = (224, 224)
     img = img.resize(newsize)
-    # To convert PIL Image to numpy array:
     img_array = np.array(img)
 
-    # Normalize the image
+    # Normalizar la imagen
     normalized_image_array = (img_array.astype(np.float32) / 127.0) - 1
-    # Load the image into the array
     data[0] = normalized_image_array
 
-    # run the inference
+    # Predicción del modelo
     prediction = model.predict(data)
     print(prediction)
-    if prediction[0][0]>0.5:
-      st.header('Tijera, con Probabilidad: '+str( prediction[0][0]) )
-    if prediction[0][1]>0.5:
-      st.header('Piedra, con Probabilidad: '+str( prediction[0][1]))
-    if prediction[0][2]>0.5:
-     st.header('Papel, con Probabilidad: '+str( prediction[0][2]))
-    if prediction[0][3]>0.5:
-     st.header('Nadota, con Probabilidad: '+str( prediction[0][3]))
+
+    # Mapeo de jugadas
+    jugadas = ["Tijera", "Piedra", "Papel", "Nada"]
+    jugador = None
+
+    for i in range(4):
+        if prediction[0][i] > 0.5:
+            jugador = jugadas[i]
+            st.header(f"Detectado: {jugador} (Probabilidad: {prediction[0][i]:.2f})")
+
+    # Si el jugador hizo una jugada válida (no "Nada")
+    if jugador in ["Tijera", "Piedra", "Papel"]:
+        computadora = random.choice(["Tijera", "Piedra", "Papel"])
+        st.subheader(f"La computadora eligió: {computadora}")
+
+        # Determinar el resultado
+        if jugador == computadora:
+            resultado = "Empate 🤝"
+        elif (jugador == "Tijera" and computadora == "Papel") or \
+             (jugador == "Piedra" and computadora == "Tijera") or \
+             (jugador == "Papel" and computadora == "Piedra"):
+            resultado = "¡Ganaste! 🎉"
+        else:
+            resultado = "Perdiste 😢"
+
+        st.success(resultado)
+    elif jugador == "Nada":
+        st.warning("No se detectó una jugada válida, intenta de nuevo.")
 
 
